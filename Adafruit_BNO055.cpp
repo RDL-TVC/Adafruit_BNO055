@@ -232,7 +232,73 @@ void Adafruit_BNO055::setExtCrystalUse(boolean usextal) {
   delay(20);
 }
 
-void Adafruit_BNO055::enableInt(byte intMask) {
+void Adafruit_BNO055::enableInt(byte intMsk) {
+  /* Save Previous mode and page to return to when done*/
+  adafruit_bno055_opmode_t prevMode = _mode;
+  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+  
+  //Switch to config mode
+  setMode(OPERATION_MODE_CONFIG);
+ 
+  //Switch to page 1 so we can configure interupts
+  write8(BNO055_PAGE_ID, 0x01);
+
+  // Enable Pin change for specified interrupt
+  write8(BNO055_INT_MSK, (read8(BNO055_INT_MSK) | intMsk) & 0b11101100);
+
+  // Enable Interrupt of specified type
+  write8(BNO055_INT_EN, (read8(BNO055_INT_EN) | intMsk) & 0b11101100);
+
+  // Return to Previous page
+  write8(BNO055_PAGE_ID, prevPage);
+
+  // Set to previous mode
+  setMode(prevMode);
+}
+
+void Adafruit_BNO055::enableAccAxisInt(byte axisMsk) {
+  /* Save Previous mode and page to return to when done*/
+  adafruit_bno055_opmode_t prevMode = _mode;
+  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+
+  // Switch to config mode
+  setMode(OPERATION_MODE_CONFIG);
+
+  // Switch to page 1 to configure interupts 
+  write8(BNO055_PAGE_ID, 0x01);
+
+  // Enable axis Specified by mask
+  write8(BNO055_ACC_INT_SETTINGS, (read8(BNO055_ACC_INT_SETTINGS)) | axisMsk);
+
+  // Return to Previous page
+  write8(BNO055_PAGE_ID, prevPage);
+  
+  // Set to previous mode
+  setMode(prevMode);
+}
+
+void Adafruit_BNO055::enableGyrAxisInt(byte axisMsk) {
+  /* Save Previous mode and page to return to when done*/
+  adafruit_bno055_opmode_t prevMode = _mode;
+  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+
+  // Switch to config mode
+  setMode(OPERATION_MODE_CONFIG);
+  
+  // Switch to page 1 to configure interupts
+  write8(BNO055_PAGE_ID, 0x01);
+  
+  // Enable Axis Specified by Mask
+  write8(BNO055_GYR_INT_SETTINGS, (read8(BNO055_GYR_INT_SETTINGS)) | axisMsk);
+
+  // Return to Previous page
+  write8(BNO055_PAGE_ID, prevPage);
+
+  // Set to previous mode
+  setMode(prevMode);
+}
+
+void Adafruit_BNO055::configAccNMSM(byte duration_type, byte threshold){
   /* Save Previous mode and page to return to when done*/
   adafruit_bno055_opmode_t prevMode = _mode;
   uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
@@ -243,11 +309,8 @@ void Adafruit_BNO055::enableInt(byte intMask) {
   //Switch to page 1 so we can configure interupts
   write8(BNO055_PAGE_ID_ADDR, 0x01);
 
-  // Enable Pin change for specified interrupt
-  write8(BNO055_INT_MASK_ADDR, (read8(BNO055_INT_MASK_ADDR)) | intMask);
-
-  // Enable Interrupt of specified type
-  write8(BNO055_INT_ADDR, (read8(BNO055_INT_ADDR)) | intMask);
+  write8(BNO055_ACC_NM_SET, duration_type & 0b01111111);
+  write8(BNO055_ACC_NM_THRESH, threshold);
 
   // Return to Previous page
   write8(BNO055_PAGE_ID_ADDR, savePageID);
@@ -256,48 +319,111 @@ void Adafruit_BNO055::enableInt(byte intMask) {
   setMode(prevMode);
 }
 
-void Adafruit_BNO055::enableAcclAxesInt(byte axesMask) {
-  /* Save Previous mode and page to return to when done*/
-  adafruit_bno055_opmode_t prevMode = _mode;
-  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+void Adafruit_BNO055::configAccAM(byte duration, byte threshold){
+    /* Save Previous mode and page to return to when done*/
+    adafruit_bno055_opmode_t prevMode = _mode;
+    uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
 
-  // Switch to config mode
-  setMode(OPERATION_MODE_CONFIG);
+    //Switch to config mode
+    setMode(OPERATION_MODE_CONFIG);
 
-  // Switch to page 1 to configure interupts 
-  write8(BNO055_PAGE_ID_ADDR, 0x01);
+    //Switch to page 1 so we can configure interupts
+    write8(BNO055_PAGE_ID_ADDR, 0x01);
 
-  // Enable axis Specified by mask
-  write8(BNO055_ACCL_INT_SETTINGS_ADDR, (read8(BNO055_ACCL_INT_SETTINGS_ADDR)) | axesMask);
+    write8(BNO055_ACC_INT_SETTINGS, read8(BNO055_ACC_INT_SETTINGS) | (duration & 0b00000011));
+    write8(BNO055_ACC_AM_THRESH, threshold);
 
-  // Return to Previous page
-  write8(BNO055_PAGE_ID_ADDR, savePageID);
-  
-  // Set to previous mode
-  setMode(prevMode);
-  
+    // Return to Previous page
+    write8(BNO055_PAGE_ID_ADDR, savePageID);
+
+    // Set to previous mode
+    setMode(prevMode);
 }
 
-void Adafruit_BNO055::enableGyroAxesInt(byte axesMask) {
-  /* Save Previous mode and page to return to when done*/
-  adafruit_bno055_opmode_t prevMode = _mode;
-  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+void Adafruit_BNO055::configAccHG(byte duration, byte threshold){
+    /* Save Previous mode and page to return to when done*/
+    adafruit_bno055_opmode_t prevMode = _mode;
+    uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
 
-  // Switch to config mode
-  setMode(OPERATION_MODE_CONFIG);
-  
-  // Switch to page 1 to configure interupts
-  write8(BNO055_PAGE_ID_ADDR, 0x01);
-  
-  // Enable Axis Specified by Mask
-  write8(BNO055_GYRO_INT_SETTINGS_ADDR, (read8(BNO055_GYRO_INT_SETTINGS_ADDR)) | axesMask);
+    //Switch to config mode
+    setMode(OPERATION_MODE_CONFIG);
 
-  // Return to Previous page
-  write8(BNO055_PAGE_ID_ADDR, savePageID);
+    //Switch to page 1 so we can configure interupts
+    write8(BNO055_PAGE_ID_ADDR, 0x01);
 
-  // Set to previous mode
-  setMode(prevMode);
+    write8(BNO055_ACC_HG_DURATION, duration);
+    write8(BNO055_ACC_HG_THRESH, threshold);
 
+    // Return to Previous page
+    write8(BNO055_PAGE_ID_ADDR, savePageID);
+
+    // Set to previous mode
+    setMode(prevMode);
+}
+
+void Adafruit_BNO055::configGyrAM(byte duration_samples, byte threshold){
+    /* Save Previous mode and page to return to when done*/
+    adafruit_bno055_opmode_t prevMode = _mode;
+    uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+
+    //Switch to config mode
+    setMode(OPERATION_MODE_CONFIG);
+
+    //Switch to page 1 so we can configure interupts
+    write8(BNO055_PAGE_ID_ADDR, 0x01);
+
+    write8(BNO055_GYR_AM_SET, duration_samples & 0b00001111);
+    write8(BNO055_GYR_AM_THRESH, threshold);
+
+    // Return to Previous page
+    write8(BNO055_PAGE_ID_ADDR, savePageID);
+
+    // Set to previous mode
+    setMode(prevMode);
+}
+
+void Adafruit_BNO055::configGyrHR(byte x_duration, byte y_duration, byte z_duration, byte x_threshold, byte y_threshold, byte z_threshold){
+    /* Save Previous mode and page to return to when done*/
+    adafruit_bno055_opmode_t prevMode = _mode;
+    uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+
+    //Switch to config mode
+    setMode(OPERATION_MODE_CONFIG);
+
+    //Switch to page 1 so we can configure interupts
+    write8(BNO055_PAGE_ID_ADDR, 0x01);
+
+    write8(BNO055_GYR_DUR_X, x_duration);
+    write8(BNO055_GYR_DUR_Y, y_duration);
+    write8(BNO055_GYR_DUR_Z, z_duration);
+
+    write8(BNO055_GYR_HR_X_SET, x_threshold);
+    write8(BNO055_GYR_HR_Y_SET, y_threshold);
+    write8(BNO055_GYR_HR_Z_SET, z_threshold);
+
+    // Return to Previous page
+    write8(BNO055_PAGE_ID_ADDR, savePageID);
+
+    // Set to previous mode
+    setMode(prevMode);
+}
+
+void Adafruit_BNO055::configGyr(){
+    /* Save Previous mode and page to return to when done*/
+    adafruit_bno055_opmode_t prevMode = _mode;
+    uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+
+    //Switch to config mode
+    setMode(OPERATION_MODE_CONFIG);
+
+    //Switch to page 1 so we can configure interupts
+    write8(BNO055_PAGE_ID_ADDR, 0x01);
+
+    // Return to Previous page
+    write8(BNO055_PAGE_ID_ADDR, savePageID);
+
+    // Set to previous mode
+    setMode(prevMode);
 }
 
 /*!
