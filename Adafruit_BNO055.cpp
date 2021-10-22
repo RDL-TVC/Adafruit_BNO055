@@ -232,6 +232,74 @@ void Adafruit_BNO055::setExtCrystalUse(boolean usextal) {
   delay(20);
 }
 
+void Adafruit_BNO055::enableInt(byte intMask) {
+  /* Save Previous mode and page to return to when done*/
+  adafruit_bno055_opmode_t prevMode = _mode;
+  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+  
+  //Switch to config mode
+  setMode(OPERATION_MODE_CONFIG);
+ 
+  //Switch to page 1 so we can configure interupts
+  write8(BNO055_PAGE_ID_ADDR, 0x01);
+
+  // Enable Pin change for specified interrupt
+  write8(BNO055_INT_MASK_ADDR, (read8(BNO055_INT_MASK_ADDR)) | intMask);
+
+  // Enable Interrupt of specified type
+  write8(BNO055_INT_ADDR, (read8(BNO055_INT_ADDR)) | intMask);
+
+  // Return to Previous page
+  write8(BNO055_PAGE_ID_ADDR, savePageID);
+
+  // Set to previous mode
+  setMode(prevMode);
+}
+
+void Adafruit_BNO055::enableAcclAxesInt(byte axesMask) {
+  /* Save Previous mode and page to return to when done*/
+  adafruit_bno055_opmode_t prevMode = _mode;
+  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+
+  // Switch to config mode
+  setMode(OPERATION_MODE_CONFIG);
+
+  // Switch to page 1 to configure interupts 
+  write8(BNO055_PAGE_ID_ADDR, 0x01);
+
+  // Enable axis Specified by mask
+  write8(BNO055_ACCL_INT_SETTINGS_ADDR, (read8(BNO055_ACCL_INT_SETTINGS_ADDR)) | axesMask);
+
+  // Return to Previous page
+  write8(BNO055_PAGE_ID_ADDR, savePageID);
+  
+  // Set to previous mode
+  setMode(prevMode);
+  
+}
+
+void Adafruit_BNO055::enableGyroAxesInt(byte axesMask) {
+  /* Save Previous mode and page to return to when done*/
+  adafruit_bno055_opmode_t prevMode = _mode;
+  uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
+
+  // Switch to config mode
+  setMode(OPERATION_MODE_CONFIG);
+  
+  // Switch to page 1 to configure interupts
+  write8(BNO055_PAGE_ID_ADDR, 0x01);
+  
+  // Enable Axis Specified by Mask
+  write8(BNO055_GYRO_INT_SETTINGS_ADDR, (read8(BNO055_GYRO_INT_SETTINGS_ADDR)) | axesMask);
+
+  // Return to Previous page
+  write8(BNO055_PAGE_ID_ADDR, savePageID);
+
+  // Set to previous mode
+  setMode(prevMode);
+
+}
+
 /*!
  *   @brief  Gets the latest system status info
  *   @param  system_status
