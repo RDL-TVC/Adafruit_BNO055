@@ -209,7 +209,39 @@ public:
     ACCEL_RADIUS_LSB_ADDR = 0X67,
     ACCEL_RADIUS_MSB_ADDR = 0X68,
     MAG_RADIUS_LSB_ADDR = 0X69,
-    MAG_RADIUS_MSB_ADDR = 0X6A
+    MAG_RADIUS_MSB_ADDR = 0X6A,
+
+    /* Interrupt Registers */
+    INT_EN_ADDR = 0x10,
+    INT_MSK_ADDR = 0x0F,
+    ACCEL_INT_SETTING_ADDR = 0x12,
+    GYRO_INT_SETTING_ADDR = 0x17,
+
+    /* Specific Interrupt Setting Registers */
+    ACCEL_NM_SET_ADDR = 0x16,
+    ACCEL_NM_THRESH_ADDR = 0x15,
+    ACCEL_HG_THRESH_ADDR = 0x14,
+    ACCEL_HG_DURATION_ADDR = 0x13,
+    ACCEL_AM_THRESH_ADDR = 0x11,
+
+    GYRO_AM_SET_ADDR = 0x1F,
+    GYRO_AM_THRESH_ADDR = 0x1E,
+
+    GYRO_DUR_X_ADDR = 0x19,
+    GYRO_DUR_Y_ADDR = 0x1B,
+    GYRO_DUR_Z_ADDR = 0x1D,
+
+    GYRO_HR_X_SET_ADDR = 0x18,
+    GYRO_HR_Y_SET_ADDR = 0x1A,
+    GYRO_HR_Z_SET_ADDR = 0x1C,
+
+    /* Sensor Configuration Registers */
+    GYRO_CONFIG_0_ADDR = 0x0A,
+    GYRO_CONFIG_1_ADDR = 0x0B,
+    MAG_CONFIG_ADDR = 0x09,
+    ACCEL_CONFIG_ADDR = 0x08,
+
+
   } adafruit_bno055_reg_t;
 
   /** BNO055 power settings */
