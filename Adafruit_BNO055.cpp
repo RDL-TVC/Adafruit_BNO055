@@ -272,7 +272,7 @@ void Adafruit_BNO055::enableInt(byte intMsk) {
   setMode(OPERATION_MODE_CONFIG);
  
   //Switch to page 1 so we can configure interupts
-  write8(BNO055_PAGE_ID, 0x01);
+  write8(BNO055_PAGE_ID_ADDR, 0x01);
 
   // Enable Pin change for specified interrupt
   write8(INT_MSK_ADDR, read8(INT_MSK_ADDR) | (intMsk & 0b11101100));
@@ -296,7 +296,7 @@ void Adafruit_BNO055::disableInt(byte intMsk) {
     setMode(OPERATION_MODE_CONFIG);
 
     //Switch to page 1 so we can configure interrupts
-    write8(BNO055_PAGE_ID, 0x01);
+    write8(BNO055_PAGE_ID_ADDR, 0x01);
 
     // Disable Pin change for specified interrupt
     write8(INT_MSK_ADDR, read8(INT_MSK_ADDR) & (~intMsk & 0b11101100));
@@ -335,7 +335,7 @@ void Adafruit_BNO055::enableAccAxisInt(byte axisMsk) {
   setMode(OPERATION_MODE_CONFIG);
 
   // Switch to page 1 to configure interrupts
-  write8(BNO055_PAGE_ID, 0x01);
+  write8(BNO055_PAGE_ID_ADDR, 0x01);
 
   // Enable axis Specified by mask
   write8(ACCEL_INT_SETTING_ADDR, read8(ACCEL_INT_SETTING_ADDR) | (axisMsk & 0b11111100));
@@ -356,7 +356,7 @@ void Adafruit_BNO055::enableGyrAxisInt(byte axisMsk) {
   setMode(OPERATION_MODE_CONFIG);
   
   // Switch to page 1 to configure interrupts
-  write8(BNO055_PAGE_ID, 0x01);
+  write8(BNO055_PAGE_ID_ADDR, 0x01);
   
   // Enable Axis Specified by Mask
   write8(GYRO_INT_SETTING_ADDR, read8(GYRO_INT_SETTING_ADDR) | (axisMsk & 0b00111111));
