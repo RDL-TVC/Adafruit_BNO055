@@ -188,6 +188,20 @@ void Adafruit_BNO055::setAxisRemap(
   delay(20);
 }
 
+void Adafruit_BNO055::setAxisRemap(byte remap) {
+    adafruit_bno055_opmode_t prevMode = _mode;
+
+    //Switch to config mode
+    setMode(OPERATION_MODE_CONFIG);
+
+    // Set axis remap register to requested remap
+    write8(BNO055_AXIS_MAP_CONFIG_ADDR, remap & 0b00111111);
+
+    // Set to previous mode
+    setMode(prevMode);
+
+}
+
 /*!
  *  @brief  Changes the chip's axis signs
  *  @param  remapsign
@@ -211,6 +225,19 @@ void Adafruit_BNO055::setAxisSign(adafruit_bno055_axis_remap_sign_t remapsign) {
   /* Set the requested operating mode (see section 3.3) */
   setMode(modeback);
   delay(20);
+}
+
+void Adafruit_BNO055::setAxisSign(byte sign){
+    adafruit_bno055_opmode_t prevMode = _mode;
+
+    //Switch to config mode
+    setMode(OPERATION_MODE_CONFIG);
+
+    // Set axis remap register to requested remap
+    write8(BNO055_AXIS_MAP_CONFIG_ADDR, sign & 0b00000111);
+
+    // Set to previous mode
+    setMode(prevMode);
 }
 
 /*!
@@ -268,7 +295,7 @@ void Adafruit_BNO055::disableInt(byte intMsk) {
     //Switch to config mode
     setMode(OPERATION_MODE_CONFIG);
 
-    //Switch to page 1 so we can configure interupts
+    //Switch to page 1 so we can configure interrupts
     write8(BNO055_PAGE_ID, 0x01);
 
     // Disable Pin change for specified interrupt
@@ -287,18 +314,12 @@ void Adafruit_BNO055::disableInt(byte intMsk) {
 void Adafruit_BNO055::clearInt(){
     /* Save Previous mode and page to return to when done*/
     adafruit_bno055_opmode_t prevMode = _mode;
-    uint8_t prevPage = read8(BNO055_PAGE_ID_ADDR);
 
     //Switch to config mode
     setMode(OPERATION_MODE_CONFIG);
 
-    //Switch to page 1 so we can configure interupts
-    write8(BNO055_PAGE_ID, 0x01);
-
+    // Clear Interrupt trigger from system trigger register (Page 0)
     write8(BNO055_SYS_TRIGGER_ADDR, read8(BNO055_SYS_TRIGGER_ADDR) & 0b10111111);
-
-    // Return to Previous page
-    write8(BNO055_PAGE_ID_ADDR, prevPage);
 
     // Set to previous mode
     setMode(prevMode);
@@ -313,7 +334,7 @@ void Adafruit_BNO055::enableAccAxisInt(byte axisMsk) {
   // Switch to config mode
   setMode(OPERATION_MODE_CONFIG);
 
-  // Switch to page 1 to configure interupts 
+  // Switch to page 1 to configure interrupts
   write8(BNO055_PAGE_ID, 0x01);
 
   // Enable axis Specified by mask
@@ -334,7 +355,7 @@ void Adafruit_BNO055::enableGyrAxisInt(byte axisMsk) {
   // Switch to config mode
   setMode(OPERATION_MODE_CONFIG);
   
-  // Switch to page 1 to configure interupts
+  // Switch to page 1 to configure interrupts
   write8(BNO055_PAGE_ID, 0x01);
   
   // Enable Axis Specified by Mask
@@ -355,10 +376,13 @@ void Adafruit_BNO055::configAccNMSM(byte duration, byte type, byte threshold){
   //Switch to config mode
   setMode(OPERATION_MODE_CONFIG);
  
-  //Switch to page 1 so we can configure interupts
+  //Switch to page 1 so we can configure interrupts
   write8(BNO055_PAGE_ID_ADDR, 0x01);
 
+  // Set duration and type of interrupt threshold
   write8(ACCEL_NM_SET_ADDR, (duration & 0b01111110) | (type & 0b00000001));
+
+  // Set Threshold at which interrupt gets created
   write8(ACCEL_NM_THRESH_ADDR, threshold);
 
   // Return to Previous page
@@ -376,10 +400,13 @@ void Adafruit_BNO055::configAccAM(byte duration, byte threshold){
     //Switch to config mode
     setMode(OPERATION_MODE_CONFIG);
 
-    //Switch to page 1 so we can configure interupts
+    //Switch to page 1 so we can configure interrupts
     write8(BNO055_PAGE_ID_ADDR, 0x01);
 
+    // Set duration needed to trigger interrupt
     write8(ACCEL_INT_SETTING_ADDR, (read8(ACCEL_INT_SETTING_ADDR) & 0b11111100) | (duration & 0b00000011));
+
+    // Set Threshold needed to trigger interrupt
     write8(ACCEL_AM_THRESH_ADDR, threshold);
 
     // Return to Previous page

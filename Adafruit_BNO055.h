@@ -317,7 +317,9 @@ public:
   bool begin(adafruit_bno055_opmode_t mode = OPERATION_MODE_NDOF);
   void setMode(adafruit_bno055_opmode_t mode);
   void setAxisRemap(adafruit_bno055_axis_remap_config_t remapcode);
+  void setAxisRemap(byte remap);
   void setAxisSign(adafruit_bno055_axis_remap_sign_t remapsign);
+  void setAxisSign(byte sign);
   void getRevInfo(adafruit_bno055_rev_info_t *);
   void setExtCrystalUse(boolean usextal);
   void getSystemStatus(uint8_t *system_status, uint8_t *self_test_result,
@@ -328,6 +330,22 @@ public:
   imu::Vector<3> getVector(adafruit_vector_type_t vector_type);
   imu::Quaternion getQuat();
   int8_t getTemp();
+
+  /* Interrupt and Configure Functions */
+  void enableInt(byte intMsk);
+  void disableInt(byte intMsk);
+  void clearInt();
+  void enableAccAxisInt(byte axisMsk);
+  void enableGyrAxisInt(byte axisMsk);
+  void configAccNMSM(byte duration, byte type, byte threshold);
+  void configAccAM(byte duration, byte threshold);
+  void configAccHG(byte duration, byte threshold);
+  void configGyrAM(byte duration, byte samples, byte threshold);
+  void configGyrHR(byte x_duration, byte y_duration, byte z_duration, byte x_threshold, byte y_threshold, byte z_threshold);
+  void configGyr(byte power, byte bandwidth, byte range);
+  void configAcc(byte power, byte bandwidth, byte range);
+  void configMag(byte power, byte operation, byte rate);
+
 
   /* Adafruit_Sensor implementation */
   bool getEvent(sensors_event_t *);
