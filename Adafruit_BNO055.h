@@ -314,7 +314,7 @@ public:
   Adafruit_BNO055(int32_t sensorID = -1, uint8_t address = BNO055_ADDRESS_A,
                   TwoWire *theWire = &Wire);
 
-  bool begin(adafruit_bno055_opmode_t mode = OPERATION_MODE_NDOF);
+  bool begin(adafruit_bno055_opmode_t mode = OPERATION_MODE_NDOF, byte axis_map = 0b00100100);
   void setMode(adafruit_bno055_opmode_t mode);
   void setAxisRemap(adafruit_bno055_axis_remap_config_t remapcode);
   void setAxisRemap(byte remap);

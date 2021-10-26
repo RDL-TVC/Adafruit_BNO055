@@ -77,7 +77,7 @@ Adafruit_BNO055::Adafruit_BNO055(int32_t sensorID, uint8_t address,
  *            OPERATION_MODE_NDOF]
  *  @return true if process is successful
  */
-bool Adafruit_BNO055::begin(adafruit_bno055_opmode_t mode) {
+bool Adafruit_BNO055::begin(adafruit_bno055_opmode_t mode, byte axis_map) {
 
   if (!i2c_dev->begin()) {
     return false;
@@ -123,11 +123,15 @@ bool Adafruit_BNO055::begin(adafruit_bno055_opmode_t mode) {
 
   /* Configure axis mapping (see section 3.4) */
   /*
-  write8(BNO055_AXIS_MAP_CONFIG_ADDR, REMAP_CONFIG_P2); // P0-P7, Default is P1
+  Serial.println(write8(BNO055_AXIS_MAP_CONFIG_ADDR, REMAP_CONFIG_P2)); // P0-P7, Default is P1
   delay(10);
   write8(BNO055_AXIS_MAP_SIGN_ADDR, REMAP_SIGN_P2); // P0-P7, Default is P1
   delay(10);
   */
+
+  setAxisRemap(axis_map);
+  //Serial.print("Axis Mapping: ");
+  //Serial.println(read8(BNO055_AXIS_MAP_CONFIG_ADDR), BIN);
 
   write8(BNO055_SYS_TRIGGER_ADDR, 0x0);
   delay(10);
@@ -195,11 +199,10 @@ void Adafruit_BNO055::setAxisRemap(byte remap) {
     setMode(OPERATION_MODE_CONFIG);
 
     // Set axis remap register to requested remap
-    write8(BNO055_AXIS_MAP_CONFIG_ADDR, remap & 0b00111111);
+    write8(BNO055_AXIS_MAP_CONFIG_ADDR, remap);
 
     // Set to previous mode
     setMode(prevMode);
-
 }
 
 /*!
